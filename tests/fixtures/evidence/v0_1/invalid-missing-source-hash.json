@@ -1,0 +1,82 @@
+{
+  "schema": "flick.validation-result/v1",
+  "record_status": "example",
+  "scope": "product-validation",
+  "task": "P01",
+  "kind": "build",
+  "result": "pass",
+  "started_at": "2026-10-05T00:00:00Z",
+  "finished_at": "2026-10-05T00:00:01Z",
+  "duration_ms": 1000,
+  "source": {"revision": null, "dirty": true},
+  "environment": {
+    "snapshot_path": ".harness/reviews/environment.json",
+    "snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "build": {
+    "preset": "dev",
+    "build_type": "Debug",
+    "compiler": {"name": "GCC", "version": "example"},
+    "dependencies": [
+      {"name": "libev", "version": "example"},
+      {"name": "libyaml", "version": "example"}
+    ],
+    "capability_manifest": {
+      "path": "build/dev/example/features.json",
+      "role": "capability-manifest",
+      "bytes": 1,
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "instrumentation": ["profiling"]
+  },
+  "commands": [
+    {
+      "argv": ["cmake", "--preset", "dev"],
+      "cwd": ".",
+      "exit_code": 0,
+      "expected_exit_codes": [0],
+      "duration_ms": 1000,
+      "stdout": {
+        "path": "build/dev/example/stdout.txt",
+        "role": "stdout",
+        "bytes": 1,
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "stderr": {
+        "path": "build/dev/example/stderr.txt",
+        "role": "stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "path": "CMakeLists.txt",
+      "role": "build-input",
+      "bytes": 1,
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    }
+  ],
+  "input_hashes": {
+    "CMakeLists.txt": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "artifacts": [],
+  "counts": {"planned": 1, "executed": 1, "passed": 1, "failed": 0, "skipped": 0},
+  "reference_analysis": {
+    "background_reviewed": true,
+    "records": ["references/example.md"],
+    "details": [
+      {
+        "path": "references/example.md",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "upstream": "https://example.invalid/upstream",
+        "revision": "example",
+        "license": "example",
+        "copied_code": false
+      }
+    ]
+  },
+  "defects": [],
+  "limitations": ["Negative contract example; source.manifest_sha256 is intentionally absent."]
+}

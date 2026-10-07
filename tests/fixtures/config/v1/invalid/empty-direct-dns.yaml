@@ -1,0 +1,9 @@
+schema-version: 1
+dns:
+  direct: []
+inbounds:
+  - name: socks-in
+    type: socks5
+    port: 10808
+rules:
+  - MATCH,DIRECT

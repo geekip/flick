@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task": "C06",
+  "source": "document/FlickNet-V0.1-Engineering-Plan.md#7-c06-构建和验证契约",
+  "license": "project-authored contract fixtures; repository license decision remains F07",
+  "cases": [
+    {
+      "path": "valid-example.json",
+      "valid": true,
+      "purpose": "A benchmark-shaped record contains provenance, command artifacts, inputs, samples and reference analysis.",
+      "evidence_eligible": false,
+      "reason": "record_status is example and values are synthetic"
+    },
+    {
+      "path": "invalid-missing-source-hash.json",
+      "valid": false,
+      "expected_error": "source.manifest_sha256 is required",
+      "purpose": "A passing result cannot omit the deterministic source fingerprint.",
+      "evidence_eligible": false
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "task": "C03",
+  "source": "document/FlickNet-Configuration-Schema-V0.1.md",
+  "license": "project-authored fixture data; repository license decision remains F07",
+  "cases": [
+    {
+      "path": "valid/minimal-direct.yaml",
+      "valid": true,
+      "commands": ["check", "test", "run"],
+      "purpose": "DIRECT domain path has an explicit direct resolver"
+    },
+    {
+      "path": "valid/socks-out-domain.yaml",
+      "valid": true,
+      "commands": ["check", "test", "run"],
+      "purpose": "SOCKS target receives DOMAIN and its own server is numeric, so no local resolver is required"
+    },
+    {
+      "path": "valid/reject-without-resolver.yaml",
+      "valid": true,
+      "commands": ["check", "test", "run"],
+      "purpose": "REJECT-only dependency closure has no resolver use root"
+    },
+    {
+      "path": "invalid/null-value.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_NULL", "path": "log-level"}
+    },
+    {
+      "path": "invalid/unknown-field.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_UNKNOWN_FIELD", "path": "mystery"}
+    },
+    {
+      "path": "invalid/missing-direct-dns.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_DNS_REQUIRED", "path": "dns.direct"}
+    },
+    {
+      "path": "invalid/missing-bootstrap-dns.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_DNS_REQUIRED", "path": "dns.bootstrap"}
+    },
+    {
+      "path": "invalid/overflow-bytes.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_OVERFLOW", "path": "limits.memory"}
+    },
+    {
+      "path": "invalid/unsupported-udp.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_UNSUPPORTED_VERSION", "path": "inbounds[0].udp"}
+    },
+    {
+      "path": "invalid/empty-direct-dns.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_RANGE", "path": "dns.direct"}
+    },
+    {
+      "path": "invalid/duplicate-key.yaml",
+      "valid": false,
+      "command": "check",
+      "error": {"code": "E_DUPLICATE_KEY", "path": "log-level"}
+    }
+  ]
+}

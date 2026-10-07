@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "target": "FlickNet V0.1 on Debian GNU/Linux 13 (trixie) amd64",
+  "captured_on": "2026-10-05",
+  "acquisition": {
+    "kind": "Debian binary packages",
+    "repository": "https://mirrors.aliyun.com/debian trixie/main",
+    "lock_policy": "Evidence records exact Debian revisions; CMake must check supported API/header/link behavior and report observed versions."
+  },
+  "runtime_dependencies": [
+    {
+      "name": "libev",
+      "upstream": "http://dist.schmorp.de/libev/",
+      "debian_source_package": "libev",
+      "debian_source_version": "1:4.33-2.1",
+      "development_package": "libev-dev:amd64=1:4.33-2.1+b1",
+      "runtime_package": "libev4t64:amd64=1:4.33-2.1+b1",
+      "soname_target": "/usr/lib/x86_64-linux-gnu/libev.so.4.0.0",
+      "discovery": "find_path(ev.h) plus find_library(ev); Debian package has no libev.pc",
+      "header_sha256": "6622bd23ae922f066cecbba48b3290a6c9325c879db158484cf0899ca95687d2",
+      "library_sha256": "31edba6e0551d8f957a347a23df22a609b1b3d054d4ec026941fc40ec4e62962",
+      "license": "BSD-2-Clause or GPL-2+ upstream dual license; intended dependency compliance path is BSD-2-Clause, subject to GOV-01 release review",
+      "license_file": "/usr/share/doc/libev-dev/copyright",
+      "copied_code": false
+    },
+    {
+      "name": "libyaml",
+      "upstream": "https://github.com/yaml/libyaml",
+      "debian_source_package": "libyaml",
+      "debian_source_version": "0.2.5-2",
+      "development_package": "libyaml-dev:amd64=0.2.5-2",
+      "runtime_soname_target": "/usr/lib/x86_64-linux-gnu/libyaml-0.so.2.0.9",
+      "pkg_config_module": "yaml-0.1",
+      "pkg_config_version": "0.2.5",
+      "header_sha256": "de39c9fc2b2c8584775e6d0dc0f13c8e778ceba47d419cff9d85465ca35d6954",
+      "library_sha256": "479b1004bc308258b7e90a1adc4e9e9595064ab361eda3279e0868ea79055d50",
+      "license": "Expat",
+      "license_file": "/usr/share/doc/libyaml-dev/copyright",
+      "copied_code": false
+    }
+  ],
+  "build_tools": {
+    "gcc": "Debian 14.2.0-19; package gcc=4:14.2.0-1",
+    "clang": "Debian 19.1.7 (3+b1); package clang-19=1:19.1.7-3+b1",
+    "cmake": "3.31.6; package 3.31.6-2",
+    "ninja": "1.12.1; package 1.12.1-1",
+    "pkg_config": "1.8.1; package pkg-config=1.8.1-4",
+    "lcov": "package 2.3.1-1; tool reports LCOV version 2.0-1",
+    "python": "3.13.5",
+    "git": "2.47.3"
+  },
+  "excluded_from_v0_1": [
+    "OpenSSL/TLS dependencies are introduced with the V0.4 TLS capability, not linked into the V0.1 baseline."
+  ],
+  "release_note": "This file does not select a FlickNet license or close F07/GOV-01. Binary distribution must retain applicable dependency notices."
+}

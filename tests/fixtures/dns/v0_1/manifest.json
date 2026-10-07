@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "task": "C05",
+  "protocol": "V0.1 minimal DNS A/CNAME resolver",
+  "source": "document/FlickNet-DNS-and-FakeDNS-Design-V0.1.md#12-c05-最小-resolver-可执行契约",
+  "license": "project-authored fixture data; copied_code: false; repository license decision remains F07",
+  "hex_encoding": "lowercase hexadecimal octets without separators",
+  "default_query": {
+    "endpoint": "192.0.2.53:53",
+    "local": "192.0.2.100:53000",
+    "id": 4660,
+    "qname": "example.org",
+    "qtype": 1,
+    "qclass": 1,
+    "wire_hex": "123401000001000000000000076578616d706c65036f72670000010001"
+  },
+  "parser_cases": [
+    {
+      "id": "a-success",
+      "transport": "udp",
+      "response_hex": "123481800001000100000000076578616d706c65036f72670000010001c00c000100010000003c0004c0000201",
+      "expect": {"result": "FN_OK", "addresses": ["192.0.2.1"], "ttl": 60}
+    },
+    {
+      "id": "cname-then-a",
+      "transport": "udp",
+      "response_hex": "123481800001000200000000076578616d706c65036f72670000010001c00c0005000100000078001305616c696173076578616d706c65036f72670005616c696173076578616d706c65036f726700000100010000003c0004c0000202",
+      "expect": {"result": "FN_OK", "addresses": ["192.0.2.2"], "cname_hops": 1, "ttl": 60}
+    },
+    {
+      "id": "nxdomain-terminal",
+      "transport": "udp",
+      "response_hex": "123481830001000000000000076578616d706c65036f72670000010001",
+      "expect": {"result": "FN_RESOLVE_ERROR", "native_code": 3, "retry": false, "failure_cache": false}
+    },
+    {
+      "id": "nodata-terminal",
+      "transport": "udp",
+      "response_hex": "123481800001000000000000076578616d706c65036f72670000010001",
+      "expect": {"result": "FN_RESOLVE_ERROR", "native_code": 256, "retry": false, "failure_cache": false}
+    },
+    {
+      "id": "udp-truncated-fallback",
+      "transport": "udp",
+      "response_hex": "123483800001000000000000076578616d706c65036f72670000010001",
+      "expect": {"action": "tcp-fallback-same-endpoint", "attempts_consumed": 1}
+    },
+    {
+      "id": "compression-pointer-self",
+      "transport": "udp",
+      "response_hex": "123481800001000100000000076578616d706c65036f72670000010001c01d000100010000003c0004c0000203",
+      "expect": {"result": "FN_PROTOCOL_ERROR", "native_code": 258, "retry_next_upstream": true}
+    },
+    {
+      "id": "mismatched-id-discard",
+      "transport": "udp",
+      "response_hex": "567881800001000100000000076578616d706c65036f72670000010001c00c000100010000003c0004c0000201",
+      "expect": {"action": "discard-and-keep-waiting", "attempts_consumed": 0}
+    },
+    {
+      "id": "mismatched-question-discard",
+      "transport": "udp",
+      "response_hex": "123481800001000100000000076578616d706c65036e65740000010001c00c000100010000003c0004c0000201",
+      "expect": {"action": "discard-and-keep-waiting", "attempts_consumed": 0}
+    },
+    {
+      "id": "seventeen-related-a-limit",
+      "transport": "udp",
+      "response_hex": "123481800001001100000000076578616d706c65036f72670000010001c00c000100010000003c0004c0000201c00c000100010000003c0004c0000202c00c000100010000003c0004c0000203c00c000100010000003c0004c0000204c00c000100010000003c0004c0000205c00c000100010000003c0004c0000206c00c000100010000003c0004c0000207c00c000100010000003c0004c0000208c00c000100010000003c0004c0000209c00c000100010000003c0004c000020ac00c000100010000003c0004c000020bc00c000100010000003c0004c000020cc00c000100010000003c0004c000020dc00c000100010000003c0004c000020ec00c000100010000003c0004c000020fc00c000100010000003c0004c0000210c00c000100010000003c0004c0000211",
+      "expect": {"result": "FN_LIMIT", "native_code": 260, "partial_addresses": false, "failure_cache": false}
+    },
+    {
+      "id": "cname-loop",
+      "transport": "udp",
+      "response_hex": "123481800001000200000000076578616d706c65036f72670000010001c00c000500010000003c000f0161076578616d706c65036f7267000161076578616d706c65036f726700000500010000003c000d076578616d706c65036f726700",
+      "expect": {"result": "FN_PROTOCOL_ERROR", "native_code": 259, "failure_cache": false}
+    },
+    {
+      "id": "tcp-frame-a-success",
+      "transport": "tcp",
+      "frame_hex": "002d123481800001000100000000076578616d706c65036f72670000010001c00c000100010000003c0004c0000201",
+      "required_chunkings": ["whole-frame", "one-octet", [1, 1, 3, 42]],
+      "expect": {"result": "FN_OK", "addresses": ["192.0.2.1"], "ttl": 60}
+    }
+  ],
+  "timeline_cases": [
+    {
+      "id": "two-upstreams-four-attempts",
+      "upstreams": ["udp://192.0.2.53:53", "udp://192.0.2.54:53"],
+      "attempts": 4,
+      "inject": ["timeout", "SERVFAIL", "timeout", "SERVFAIL"],
+      "expect_send_order": ["192.0.2.53/udp", "192.0.2.54/udp", "192.0.2.53/udp", "192.0.2.54/udp"]
+    },
+    {
+      "id": "single-upstream-three-send-cap",
+      "upstreams": ["udp://192.0.2.53:53"],
+      "attempts": 4,
+      "inject": ["timeout", "timeout", "timeout"],
+      "expect": {"sends": 3, "result": "FN_TIMEOUT", "native_code": 261}
+    },
+    {
+      "id": "duplicate-upstream-does-not-add-budget",
+      "upstreams": ["udp://192.0.2.53:53", "udp://192.0.2.53:53"],
+      "schema_validation_bypassed": true,
+      "attempts": 4,
+      "inject": ["timeout", "timeout", "timeout"],
+      "expect": {"unique_runtime_upstreams": 1, "sends": 3, "result": "FN_TIMEOUT"}
+    },
+    {
+      "id": "tc-consumes-final-attempt",
+      "upstreams": ["udp://192.0.2.53:53"],
+      "attempts": 2,
+      "inject": ["TC", "tcp-timeout"],
+      "expect_send_order": ["192.0.2.53/udp", "192.0.2.53/tcp"],
+      "expect": {"sends": 2, "result": "FN_TIMEOUT"}
+    },
+    {
+      "id": "bare-cname-shares-attempt-budget",
+      "upstreams": ["udp://192.0.2.53:53"],
+      "attempts": 2,
+      "inject": ["CNAME alias.example.org", "A 192.0.2.2"],
+      "expect_questions": ["example.org/A/IN", "alias.example.org/A/IN"],
+      "expect": {"sends": 2, "result": "FN_OK", "addresses": ["192.0.2.2"]}
+    },
+    {
+      "id": "short-waiter-does-not-poison-shared-transaction",
+      "upstreams": ["udp://192.0.2.53:53"],
+      "attempts": 2,
+      "waiters_ms": [50, 2000],
+      "inject_at_ms": {"100": "A 192.0.2.1"},
+      "expect": ["waiter[0]=FN_TIMEOUT", "waiter[1]=FN_OK", "failure_cache=false"]
+    }
+  ]
+}

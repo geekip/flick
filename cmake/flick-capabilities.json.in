@@ -1,0 +1,75 @@
+{
+  "schema": "flick.build-capabilities/v1",
+  "program": "flick",
+  "software_release": null,
+  "profile": "@FN_BUILD_PROFILE@",
+  "platform": {
+    "system": "@CMAKE_SYSTEM_NAME@",
+    "processor": "@CMAKE_SYSTEM_PROCESSOR@"
+  },
+  "source": {
+    "revision": @FN_JSON_GIT_REVISION@,
+    "dirty": @FN_JSON_GIT_DIRTY@
+  },
+  "compiler": {
+    "name": "@CMAKE_C_COMPILER_ID@",
+    "version": "@CMAKE_C_COMPILER_VERSION@"
+  },
+  "dependencies": {
+    "libev": "@FN_LIBEV_VERSION_MAJOR@.@FN_LIBEV_VERSION_MINOR@",
+    "libyaml": "@FN_YAML_VERSION@"
+  },
+  "instrumentation": {
+    "tests_built": @FN_JSON_BUILD_TESTING@,
+    "benchmarks_requested": @FN_JSON_BUILD_BENCHMARKS_REQUESTED@,
+    "benchmark_targets_present": @FN_JSON_BENCHMARK_TARGETS_PRESENT@,
+    "fuzzers_requested": @FN_JSON_BUILD_FUZZERS_REQUESTED@,
+    "fuzz_targets_present": @FN_JSON_FUZZ_TARGETS_PRESENT@,
+    "profiling": @FN_JSON_PROFILING@,
+    "coverage": @FN_JSON_COVERAGE@,
+    "sanitizer": "@FN_SANITIZER@"
+  },
+  "compiled_feature_bits": "0x000000900002b004",
+  "compiled_features": {
+    "direct_tcp": true,
+    "direct_udp": false,
+    "socks_in_tcp": true,
+    "socks_in_udp": false,
+    "socks_out_tcp": true,
+    "socks_out_udp": false,
+    "dns_resolver": true,
+    "dns_upstream_udp": true,
+    "dns_upstream_tcp": true,
+    "dns_result_cache": false,
+    "dns_failure_cache": true,
+    "dns_listen_udp": false,
+    "dns_listen_tcp": false,
+    "fakeip_allocate": false,
+    "fakeip_recover": false,
+    "fakeip_persist": false,
+    "geoip_data": false,
+    "geosite_data": false,
+    "tls_client": false,
+    "tls_server": false,
+    "anytls_in": false,
+    "anytls_out": false,
+    "uot": false,
+    "udp_relay_pool": false,
+    "mixed_http": false,
+    "tproxy_tcp": false,
+    "tproxy_udp": false,
+    "sniff_tls": false,
+    "sniff_http": false,
+    "group_select": false,
+    "group_url_test": false,
+    "health": false,
+    "http_client": false,
+    "access_log": false,
+    "trace": false,
+    "metrics_detail": false,
+    "geo_update": false,
+    "config_diff": false,
+    "config_patch": false,
+    "control": false
+  }
+}

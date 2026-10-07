@@ -1,0 +1,102 @@
+{
+  "schema": "flick.validation-result/v1",
+  "record_status": "example",
+  "scope": "product-validation",
+  "task": "P14",
+  "kind": "benchmark",
+  "result": "pass",
+  "started_at": "2026-10-05T00:00:00Z",
+  "finished_at": "2026-10-05T00:00:01Z",
+  "duration_ms": 1000,
+  "source": {
+    "revision": null,
+    "dirty": true,
+    "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "environment": {
+    "snapshot_path": ".harness/reviews/environment.json",
+    "snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "build": {
+    "preset": "release",
+    "build_type": "Release",
+    "compiler": {"name": "GCC", "version": "example"},
+    "dependencies": [
+      {"name": "libev", "version": "example"},
+      {"name": "libyaml", "version": "example"}
+    ],
+    "capability_manifest": {
+      "path": "build/release/example/features.json",
+      "role": "capability-manifest",
+      "bytes": 1,
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "media_type": "application/json"
+    },
+    "instrumentation": []
+  },
+  "commands": [
+    {
+      "argv": ["python3", "bench/run.py", "--preset", "release"],
+      "cwd": ".",
+      "exit_code": 0,
+      "expected_exit_codes": [0],
+      "duration_ms": 1000,
+      "stdout": {
+        "path": "build/release/example/stdout.txt",
+        "role": "stdout",
+        "bytes": 1,
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "media_type": "text/plain"
+      },
+      "stderr": {
+        "path": "build/release/example/stderr.txt",
+        "role": "stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "media_type": "text/plain"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "path": "bench/workloads/example.json",
+      "role": "workload",
+      "bytes": 1,
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "media_type": "application/json"
+    }
+  ],
+  "input_hashes": {
+    "bench/workloads/example.json": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "artifacts": [],
+  "counts": {"planned": 1, "executed": 1, "passed": 1, "failed": 0, "skipped": 0},
+  "metrics": [
+    {
+      "name": "example_latency",
+      "unit": "ns",
+      "samples": [1, 2],
+      "p50": 1.5,
+      "p95": 2,
+      "p99": 2,
+      "minimum": 1,
+      "maximum": 2
+    }
+  ],
+  "reference_analysis": {
+    "background_reviewed": true,
+    "records": ["references/example.md"],
+    "details": [
+      {
+        "path": "references/example.md",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "upstream": "https://example.invalid/upstream",
+        "revision": "example",
+        "license": "example",
+        "copied_code": false
+      }
+    ]
+  },
+  "defects": [],
+  "limitations": ["Contract example only; all hashes and measurements are synthetic."]
+}

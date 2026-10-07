@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "target": "FlickNet V0.1",
+  "reviewed_on": "2026-10-05",
+  "default_dependency_mode": "system",
+  "supported_dependency_modes": [
+    "system",
+    "vendored"
+  ],
+  "policy": {
+    "automatic_fetch_during_configure": false,
+    "submodules_are_optional": true,
+    "submodules_must_pin_commits": true,
+    "recursive_checkout_must_be_explicit": true,
+    "unused_libraries_must_not_be_vendored": true,
+    "license_and_notice_review_required_before_distribution": true,
+    "mode_selection_contract": "A future FN_DEPENDENCY_MODE=system|vendored option must select one complete dependency source without network fallback. The default remains system."
+  },
+  "libraries": [
+    {
+      "name": "libev",
+      "requested_repository": "https://github.com/libev-cn/libev",
+      "v0_1_role": "direct runtime dependency",
+      "decision": "eligible-after-provenance-review",
+      "reason": "V0.1 uses the libev API, but the requested GitHub repository presents itself as a mirror and is not the upstream distribution location recorded by the project. Keep the verified Debian package until an authoritative, maintained Git source and exact revision are approved."
+    },
+    {
+      "name": "libyaml",
+      "requested_repository": "https://github.com/yaml/libyaml",
+      "v0_1_role": "direct runtime dependency",
+      "decision": "eligible",
+      "reason": "P03 uses the public libyaml event parser API. The requested repository is the canonical source repository; a vendored mode may pin the reviewed 0.2.5 revision."
+    },
+    {
+      "name": "json-parser",
+      "requested_repository": "https://github.com/json-parser/json-parser",
+      "v0_1_role": "none",
+      "decision": "exclude",
+      "reason": "V0.1 does not accept JSON configuration. Machine-readable output can be emitted without a JSON DOM parser."
+    },
+    {
+      "name": "uthash",
+      "requested_repository": "https://github.com/troydhanson/uthash",
+      "v0_1_role": "none",
+      "decision": "exclude",
+      "reason": "No current V0.1 component requires the uthash macro API; bounded project-owned arrays and indexes are sufficient for the implemented contracts."
+    },
+    {
+      "name": "xxHash",
+      "requested_repository": "https://github.com/Cyan4973/xxHash",
+      "v0_1_role": "none",
+      "decision": "defer",
+      "reason": "A fast non-cryptographic hash may be evaluated for later Geo/index formats, but V0.1 has no accepted consumer or file-format contract for it."
+    },
+    {
+      "name": "c-ares",
+      "requested_repository": "https://github.com/c-ares/c-ares",
+      "v0_1_role": "reference implementation only",
+      "decision": "exclude",
+      "reason": "V0.1 has a project-specific bounded resolver contract and does not link c-ares. Its source is reviewed for parsing and resolver behavior only."
+    },
+    {
+      "name": "lwIP",
+      "requested_repository": "https://github.com/lwip-tcpip/lwip",
+      "v0_1_role": "none",
+      "decision": "defer",
+      "reason": "lwIP belongs to a possible future TUN/user-space TCP-IP stack and is outside the native Linux V0.1 scope. The requested GitHub repository is also a mirror of the Savannah source."
+    }
+  ]
+}

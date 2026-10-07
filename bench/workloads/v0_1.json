@@ -1,0 +1,101 @@
+{
+  "schema": "flick.benchmark-workload/v1",
+  "seed": 104729,
+  "warmup_samples": 5,
+  "recorded_samples": 30,
+  "percentile_method": "nearest-rank",
+  "rule": {
+    "cases": [
+      {"id": 1, "name": "cold_runtime_build", "phase": "cold", "iterations_per_sample": 1000, "units": ["ns/op", "cpu_ns/op", "owned_bytes"]},
+      {"id": 2, "name": "steady_match_ipv4", "phase": "steady", "iterations_per_sample": 200000, "units": ["ns/op", "cpu_ns/op"]},
+      {"id": 3, "name": "steady_match_domain_resolved", "phase": "steady", "iterations_per_sample": 200000, "units": ["ns/op", "cpu_ns/op"]},
+      {"id": 4, "name": "first_lazy_activation", "phase": "first_lazy", "iterations_per_sample": 1000, "units": ["ns/op", "cpu_ns/op", "owned_bytes"]},
+      {"id": 5, "name": "runtime_reclaim", "phase": "reclaim", "iterations_per_sample": 1000, "units": ["ns/op", "cpu_ns/op", "owned_bytes"]}
+    ]
+  },
+  "socks": {
+    "cases": [
+      {"id": 101, "name": "inbound_no_auth_ipv4", "phase": "steady", "iterations_per_sample": 20000, "units": ["ns/handshake", "cpu_ns/handshake", "owned_bytes"]},
+      {"id": 102, "name": "inbound_userpass_domain", "phase": "steady", "iterations_per_sample": 20000, "units": ["ns/handshake", "cpu_ns/handshake", "owned_bytes"]},
+      {"id": 103, "name": "socks_reclaim", "phase": "reclaim", "iterations_per_sample": 1000, "units": ["ns/op", "owned_bytes"]}
+    ],
+    "product_cases": [
+      {"name": "product_no_auth_ipv4_connect", "phase": "steady", "operations_per_sample": 50, "units": ["ms/connect", "connections/s", "cpu_seconds"]},
+      {"name": "product_userpass_domain_connect", "phase": "steady", "operations_per_sample": 50, "units": ["ms/connect", "connections/s", "cpu_seconds"]}
+    ]
+  },
+  "dns": {
+    "cases": [
+      {"id": 201, "name": "parse_a_answer", "phase": "steady", "iterations_per_sample": 100000, "units": ["ns/query", "cpu_ns/query"]},
+      {"id": 202, "name": "parse_cname_then_a", "phase": "steady", "iterations_per_sample": 100000, "units": ["ns/query", "cpu_ns/query"]},
+      {"id": 203, "name": "resolver_udp_tc_tcp_fallback", "phase": "first_lazy", "iterations_per_sample": 1000, "units": ["ns/query", "cpu_ns/query", "owned_bytes"]},
+      {"id": 204, "name": "parse_nxdomain", "phase": "steady", "iterations_per_sample": 100000, "units": ["ns/query", "cpu_ns/query"]},
+      {"id": 205, "name": "resolver_reclaim", "phase": "reclaim", "iterations_per_sample": 1000, "units": ["ns/op", "owned_bytes"]}
+    ]
+  },
+  "relay": {
+    "payload_seed": 104729,
+    "chunk_bytes": 16384,
+    "throughput_payload_semantics": "payload_bytes_per_sample is verified application payload per direction; bytes/s sums verified bytes over declared directions and excludes setup",
+    "cases": [
+      {"id": 301, "name": "native_socket_bidirectional", "phase": "steady", "directions": 2, "payload_bytes_per_sample": 67108864, "units": ["bytes/s", "cpu_seconds", "cpu_seconds/GiB"]},
+      {"id": 302, "name": "in_process_bidirectional", "phase": "steady", "directions": 2, "payload_bytes_per_sample": 67108864, "units": ["bytes/s", "cpu_seconds", "cpu_seconds/GiB"]},
+      {"id": 303, "name": "slow_receiver", "phase": "steady", "directions": 1, "payload_bytes_per_sample": 8388608, "receiver_delay_ms": 2, "units": ["bytes/s", "max_buffer_bytes", "peer_progress_bytes", "owned_bytes"]},
+      {"id": 304, "name": "relay_reclaim", "phase": "reclaim", "iterations_per_sample": 1000, "units": ["ns/op", "owned_bytes", "fd_count"]}
+    ],
+    "product_cases": [
+      {"name": "product_direct", "phase": "steady", "directions": 2, "payload_bytes_per_sample": 67108864, "units": ["bytes/s", "cpu_seconds", "rss_bytes", "pss_bytes", "owned_bytes", "socket_memory_bytes"]},
+      {"name": "product_socks_chain", "phase": "steady", "directions": 2, "payload_bytes_per_sample": 67108864, "units": ["bytes/s", "cpu_seconds", "rss_bytes", "pss_bytes", "owned_bytes", "socket_memory_bytes", "ms/connect"]}
+    ]
+  },
+  "startup": {
+    "cases": [
+      {"name": "startup_cold_file_cache", "phase": "cold", "method": "posix_fadvise_dontneed_on_binary_and_config_before_each_process", "units": ["ms/start", "rss_bytes", "pss_bytes", "owned_bytes"]},
+      {"name": "startup_hot_file_cache", "phase": "hot", "method": "read_binary_and_config_before_each_process", "units": ["ms/start", "rss_bytes", "pss_bytes", "owned_bytes"]}
+    ]
+  },
+  "idle": {
+    "warmup_interval_seconds": 1,
+    "recorded_interval_seconds": 1,
+    "cases": [
+      {"name": "idle_stable_minimal", "phase": "steady", "units": ["rss_bytes", "pss_bytes", "owned_bytes", "fd_count", "socket_memory_bytes"]}
+    ]
+  },
+  "capacity": {
+    "connection_counts": [1, 100, 1000, 10000],
+    "open_batch_size": 128,
+    "batch_deadline_seconds": 15,
+    "metrics_interval_seconds": 0.2,
+    "warmup_observations_per_held_topology": 5,
+    "recorded_observations_per_held_topology": 30,
+    "close_batch_size": 128,
+    "drain_deadline_seconds": 60,
+    "units": ["ms/connect", "connections/s", "rss_bytes", "pss_bytes", "owned_bytes", "fd_count", "socket_memory_bytes"]
+  },
+  "deadlines": {
+    "overall_seconds": 7200,
+    "configure_seconds": 600,
+    "build_seconds": 600,
+    "target_process_seconds": 1800,
+    "startup_ready_seconds": 10,
+    "product_connect_seconds": 10,
+    "throughput_sample_seconds": 60,
+    "capacity_batch_seconds": 15,
+    "resource_observation_seconds": 10,
+    "reclaim_seconds": 60,
+    "process_stop_seconds": 70
+  },
+  "warnings": {
+    "idle_rss_target_bytes": 10000000,
+    "idle_rss_upper_bytes": 15000000,
+    "startup_target_ms": 200,
+    "pure_rule_p99_target_ns": 20000,
+    "comparable_regression_percent": 5,
+    "capacity_target_connections": 10000
+  },
+  "fixture_inputs": {
+    "config": {"path": "tests/fixtures/config/v1/valid/minimal-direct.yaml", "sha256": "49c0a136863ca51ecee547b7c7b9f70fed238694b007672c38b0427a7bdcebad"},
+    "socks_manifest": {"path": "tests/fixtures/socks5/v0_1/manifest.json", "sha256": "e0105f734f8e01732bb7e9c2278aa5a512a8b2f3c5e70ef0e5ffbd880fae1afe", "cases": ["inbound-no-auth-ipv4-preread", "inbound-auth-domain-success"]},
+    "dns_manifest": {"path": "tests/fixtures/dns/v0_1/manifest.json", "sha256": "784569514c182db99ab7d2c862115f9c9b4e00ac16682f5663cdfa5e375fe8b5", "cases": ["a-success", "cname-then-a", "udp-truncated-fallback", "nxdomain-terminal"]}
+  }
+}

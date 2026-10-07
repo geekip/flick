@@ -1,0 +1,170 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base-gcc",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/bin/gcc",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "base-clang",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "dev",
+      "inherits": "base-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FN_BUILD_PROFILE": "dev",
+        "FN_BUILD_TESTING": "ON",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "ON",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "none"
+      }
+    },
+    {
+      "name": "release",
+      "inherits": "base-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FN_BUILD_PROFILE": "release",
+        "FN_BUILD_TESTING": "ON",
+        "FN_BUILD_BENCHMARKS": "ON",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "none"
+      }
+    },
+    {
+      "name": "release-minimal",
+      "inherits": "base-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FN_BUILD_PROFILE": "release-minimal",
+        "FN_BUILD_TESTING": "OFF",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "none"
+      }
+    },
+    {
+      "name": "asan",
+      "inherits": "base-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "FN_BUILD_PROFILE": "asan",
+        "FN_BUILD_TESTING": "ON",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "address"
+      }
+    },
+    {
+      "name": "ubsan",
+      "inherits": "base-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "FN_BUILD_PROFILE": "ubsan",
+        "FN_BUILD_TESTING": "ON",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "undefined"
+      }
+    },
+    {
+      "name": "coverage",
+      "inherits": "base-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FN_BUILD_PROFILE": "coverage",
+        "FN_BUILD_TESTING": "ON",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "OFF",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "ON",
+        "FN_SANITIZER": "none"
+      }
+    },
+    {
+      "name": "fuzz",
+      "inherits": "base-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "FN_BUILD_PROFILE": "fuzz",
+        "FN_BUILD_TESTING": "OFF",
+        "FN_BUILD_BENCHMARKS": "OFF",
+        "FN_BUILD_FUZZERS": "ON",
+        "FN_ENABLE_PROFILING": "OFF",
+        "FN_ENABLE_COVERAGE": "OFF",
+        "FN_SANITIZER": "fuzz"
+      }
+    }
+  ],
+  "buildPresets": [
+    {"name": "dev", "configurePreset": "dev"},
+    {"name": "release", "configurePreset": "release"},
+    {"name": "release-minimal", "configurePreset": "release-minimal"},
+    {"name": "asan", "configurePreset": "asan"},
+    {"name": "ubsan", "configurePreset": "ubsan"},
+    {"name": "coverage", "configurePreset": "coverage"},
+    {"name": "fuzz", "configurePreset": "fuzz"}
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": {"outputOnFailure": true}
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {"outputOnFailure": true}
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan",
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1:strict_string_checks=1"
+      },
+      "output": {"outputOnFailure": true}
+    },
+    {
+      "name": "ubsan",
+      "configurePreset": "ubsan",
+      "environment": {
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "output": {"outputOnFailure": true}
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "output": {"outputOnFailure": true}
+    }
+  ]
+}

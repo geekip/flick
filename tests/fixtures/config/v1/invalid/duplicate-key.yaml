@@ -1,0 +1,9 @@
+schema-version: 1
+log-level: warn
+log-level: info
+inbounds:
+  - name: socks-in
+    type: socks5
+    port: 10808
+rules:
+  - MATCH,REJECT

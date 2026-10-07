@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "task": "C04",
+  "protocol": "SOCKS5 TCP CONNECT; RFC 1928 and RFC 1929 V0.1 subset",
+  "source": "document/FlickNet-Core-and-Session-Design-V0.1.md#61-c04-socks5-wire-子集",
+  "license": "project-authored fixture data; copied_code: false; repository license decision remains F07",
+  "hex_encoding": "lowercase hexadecimal octets without separators",
+  "required_chunkings": ["whole-feed", "one-octet", "declared-splits"],
+  "cases": [
+    {
+      "id": "inbound-no-auth-ipv4-preread",
+      "role": "inbound",
+      "config": {"users": {}},
+      "steps": [
+        {"feed_hex": "050100", "splits": [1, 1, 1]},
+        {"expect_write_hex": "0500"},
+        {"feed_hex": "050100017f0000010050474554", "splits": [4, 1, 3, 2, 3]},
+        {"expect_target": "127.0.0.1:80", "expect_preread_hex": "474554"},
+        {"inject": "direct_connected", "bound": "192.0.2.10:50000"},
+        {"expect_write_hex": "05000001c000020ac350"}
+      ],
+      "expect": {"state": "RELAY", "result": "FN_OK"}
+    },
+    {
+      "id": "inbound-coalesced-greeting-request-payload",
+      "role": "inbound",
+      "config": {"users": {}},
+      "steps": [
+        {"feed_hex": "050100050100017f0000010050474554", "splits": [3, 10, 3]},
+        {"expect_write_sequence_hex": ["0500", "05000001c000020ac350"], "after_inject": "direct_connected:192.0.2.10:50000"},
+        {"expect_target": "127.0.0.1:80", "expect_preread_hex": "474554"}
+      ],
+      "expect": {"state": "RELAY", "result": "FN_OK", "equivalent_to": "inbound-no-auth-ipv4-preread"}
+    },
+    {
+      "id": "inbound-auth-domain-success",
+      "role": "inbound",
+      "config": {"users": {"alice": "secret"}},
+      "steps": [
+        {"feed_hex": "05020002", "splits": [2, 2]},
+        {"expect_write_hex": "0502"},
+        {"feed_hex": "0105616c69636506736563726574", "splits": [1, 1, 5, 1, 6]},
+        {"expect_write_hex": "0100"},
+        {"feed_hex": "050100030b6578616d706c652e6f726701bb1603", "splits": [4, 1, 11, 2, 2]},
+        {"expect_target": "example.org:443", "expect_preread_hex": "1603"},
+        {"inject": "direct_connected", "bound": "192.0.2.20:49152"},
+        {"expect_write_hex": "05000001c0000214c000"}
+      ],
+      "expect": {"state": "RELAY", "result": "FN_OK"}
+    },
+    {
+      "id": "inbound-method-no-intersection",
+      "role": "inbound",
+      "config": {"users": {}},
+      "steps": [
+        {"feed_hex": "050101", "splits": [1, 1, 1]},
+        {"expect_write_hex": "05ff"}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_AUTH_ERROR"}
+    },
+    {
+      "id": "inbound-no-auth-downgrade-forbidden",
+      "role": "inbound",
+      "config": {"users": {"alice": "secret"}},
+      "steps": [
+        {"feed_hex": "050100", "splits": [3]},
+        {"expect_write_hex": "05ff"}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_AUTH_ERROR"}
+    },
+    {
+      "id": "inbound-auth-failure",
+      "role": "inbound",
+      "config": {"users": {"alice": "secret"}},
+      "steps": [
+        {"feed_hex": "050102", "splits": [1, 2]},
+        {"expect_write_hex": "0502"},
+        {"feed_hex": "0105616c6963650677726f6e6721", "splits": [2, 5, 1, 6]},
+        {"expect_write_hex": "0101"}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_AUTH_ERROR", "stage": "FN_STAGE_SOCKS_AUTH"}
+    },
+    {
+      "id": "inbound-bind-unsupported",
+      "role": "inbound",
+      "config": {"users": {}},
+      "steps": [
+        {"feed_hex": "050100050200017f0000010050", "splits": [3, 4, 6]},
+        {"expect_write_sequence_hex": ["0500", "05070001000000000000"]}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_UNSUPPORTED", "rep": 7}
+    },
+    {
+      "id": "inbound-ipv6-target-unsupported",
+      "role": "inbound",
+      "config": {"users": {}},
+      "steps": [
+        {"feed_hex": "05010005010004", "splits": [3, 4]},
+        {"expect_write_sequence_hex": ["0500", "05080001000000000000"]}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_UNSUPPORTED", "rep": 8}
+    },
+    {
+      "id": "outbound-no-auth-domain-success",
+      "role": "outbound",
+      "config": {"username": null, "password": null},
+      "steps": [
+        {"inject": "tcp_connected"},
+        {"expect_write_hex": "050100"},
+        {"feed_hex": "0500", "splits": [1, 1]},
+        {"expect_write_hex": "050100030b6578616d706c652e6f726701bb"},
+        {"feed_hex": "050000030b626f756e642e6c6f63616cc350", "splits": [4, 1, 11, 2]}
+      ],
+      "expect": {"state": "READY", "result": "FN_OK", "bound": "bound.local:50000"}
+    },
+    {
+      "id": "outbound-auth-failure",
+      "role": "outbound",
+      "config": {"username": "bob", "password": "pw"},
+      "steps": [
+        {"inject": "tcp_connected"},
+        {"expect_write_hex": "050102"},
+        {"feed_hex": "0502", "splits": [2]},
+        {"expect_write_hex": "0103626f62027077"},
+        {"feed_hex": "0101", "splits": [1, 1]}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_AUTH_ERROR", "stage": "FN_STAGE_SOCKS_AUTH", "native_code": 1}
+    },
+    {
+      "id": "outbound-rep-connection-refused",
+      "role": "outbound",
+      "config": {"username": null, "password": null},
+      "steps": [
+        {"inject": "tcp_connected"},
+        {"expect_write_hex": "050100"},
+        {"feed_hex": "0500", "splits": [2]},
+        {"expect_write_hex": "050100017f0000010050"},
+        {"feed_hex": "05050001000000000000", "splits": [4, 4, 2]}
+      ],
+      "expect": {"state": "CLOSED", "result": "FN_CONNECTION_REFUSED", "stage": "FN_STAGE_SOCKS_CONNECT", "native_code": 5, "inbound_rep": 5}
+    },
+    {
+      "id": "direct-candidate-retry-before-protocol",
+      "role": "dial",
+      "candidate_order": ["192.0.2.1:80", "192.0.2.2:80"],
+      "steps": [
+        {"inject": "connect_refused:192.0.2.1:80"},
+        {"expect_next_candidate": "192.0.2.2:80"},
+        {"inject": "direct_connected:192.0.2.2:80"}
+      ],
+      "expect": {"state": "READY", "result": "FN_OK", "attempts": 2}
+    }
+  ]
+}

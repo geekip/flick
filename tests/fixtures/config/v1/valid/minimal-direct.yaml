@@ -1,0 +1,16 @@
+schema-version: 1
+mode: rule
+ipv6: false
+log-level: warn
+dns:
+  enable: false
+  direct:
+    - udp://192.0.2.53:53
+inbounds:
+  - name: socks-in
+    type: socks5
+    listen: 127.0.0.1
+    port: 10808
+    udp: false
+rules:
+  - MATCH,DIRECT
